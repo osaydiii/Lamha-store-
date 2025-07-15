@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خدمات لمحة</title>
+  <style>
+    body { font-family: 'Tahoma', sans-serif; direction: rtl; margin: 0; padding: 0; background-color: #f9f9f9; }
+    header { background-color: #6B4F4F; color: white; padding: 20px; text-align: center; }
+    nav { display: flex; justify-content: space-around; background-color: #e0e0e0; padding: 10px; }
+    nav a { text-decoration: none; color: #333; font-weight: bold; }
+    section { padding: 20px; }
+    .product { background: white; border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    .cart, .favorites { background: #f1f1f1; padding: 15px; margin-top: 20px; border-radius: 5px; }
+    footer { background-color: #6B4F4F; color: white; text-align: center; padding: 15px; }
+    .button { background-color: #A97C7C; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    .delete-btn { background: none; border: none; color: red; font-size: 18px; cursor: pointer; margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>خدمات لمحة</h1>
+    <p>تصاميم، كتابة محتوى، خدمات رقمية بأسعار رمزية</p>
+  </header>
+
+  <nav>
+    <a href="#designs">تصاميم</a>
+    <a href="#ads">كتابة إعلانات</a>
+    <a href="#services">خدمات إضافية</a>
+    <a href="#favorites">المفضلة</a>
+    <a href="#cart">عربة التسوق</a>
+  </nav>
+
+  <section id="designs">
+    <h2>التصاميم</h2>
+    <div class="product">تصميم بوستر - 10 ريال</div>
+    <div class="product">تصميم منيو - 15 ريال</div>
+  </section>
+
+  <section id="ads">
+    <h2>كتابة الإعلانات</h2>
+    <div class="product">إعلان سناب احترافي - 10 ريال</div>
+    <div class="product">إعلان إنستغرام - 10 ريال</div>
+  </section>
+
+  <section id="services">
+    <h2>خدمات إضافية</h2>
+    <div class="product">تصميم سيرة ذاتية - 15 ريال</div>
+    <div class="product">ترجمة بسيطة - 10 ريال</div>
+  </section>
+
+  <section id="favorites">
+    <h2>المفضلة</h2>
+    <div class="favorites">لا توجد عناصر مضافة للمفضلة حاليًا.</div>
+  </section>
+
+  <section id="cart">
+    <h2>عربة التسوق</h2>
+    <div class="cart">لا توجد عناصر في العربة.</div>
+  </section>
+
+  <section id="payment">
+    <h2>طرق الدفع</h2>
+    <p>الدفع يتم يدويًا عبر تحويل بنكي أو تواصل عبر الواتساب.</p>
+    <a class="button" href="https://wa.me/966533668373" target="_blank">تواصل عبر واتساب</a>
+  </section>
+
+  <footer>
+    <p>جميع الحقوق محفوظة لـلمحة © 2025</p>
+  </footer>
+
+<script>
+  const favoritesSection = document.querySelector(".favorites");
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+  function updateFavoritesUI() {
+    if (favorites.length === 0) {
+      favoritesSection.innerHTML = "<div class='favorites'>لا توجد عناصر مضافة للمفضلة حاليًا.</div>";
+      return;
+    }
+
+    let html = "";
+    favorites.forEach((item, index) => {
+      html += `<div class='product'>${item} <button class="delete-btn" onclick="removeFavorite(${index})">❌</button></div>`;
+    });
+    favoritesSection.innerHTML = html;
+  }
+
+  function addFavorite(itemName) {
+    if (!favorites.includes(itemName)) {
+      favorites.push(itemName);
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      updateFavoritesUI();
+    }
+  }
+
+  function removeFavorite(index) {
+    favorites.splice(index, 1);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    updateFavoritesUI();
+  }
+
+  const cartSection = document.querySelector(".cart");
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  function updateCartUI() {
+    if (cart.length === 0) {
+      cartSection.innerHTML = "لا توجد عناصر في العربة.";
+      return;
+    }
+
+    let html = "<ul>";
+    let total = 0;
+    cart.forEach((item, index) => {
+      html += `<li>${item.name} - ${item.price} ريال <button class="delete-btn" onclick="removeFromCart(${index})">❌</button></li>`;
+      total += item.price;
+    });
+    html += `</ul><p><strong>الإجمالي: ${total} ريال</strong></p>`;
+    cartSection.innerHTML = html;
+  }
+
+  function addToCart(name, price) {
+    cart.push({ name, price });
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartUI();
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartUI();
+  }
+
+  document.querySelectorAll(".product").forEach(product => {
+    const text = product.childNodes[0].textContent.trim();
+    const match = text.match(/^(.*?)\s*-\s*(\d+)\s*ريال/);
+    const name = match ? match[1] : text;
+    const price = match ? parseInt(match[2]) : 0;
+
+    // إزالة كل الأزرار القديمة
+    product.querySelectorAll("button").forEach(btn => btn.remove());
+
+    // زر إضافة إلى العربة
+    const addToCartBtn = document.createElement("button");
+    addToCartBtn.className = "button";
+    addToCartBtn.textContent = "أضف إلى العربة";
+    addToCartBtn.onclick = () => addToCart(name, price);
+    product.appendChild(addToCartBtn);
+
+    // زر إضافة إلى المفضلة
+    const favBtn = document.createElement("button");
+    favBtn.className = "button";
+    favBtn.style.marginRight = "10px";
+    favBtn.textContent = "أضف إلى المفضلة";
+    favBtn.onclick = () => addFavorite(name);
+    product.appendChild(favBtn);
+  });
+
+  updateFavoritesUI();
+  updateCartUI();
+</script>
+</body>
+</html>
